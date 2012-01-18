@@ -1,5 +1,5 @@
 var  events                     = require( 'events' )
-    ,utils                      = require( 'utils' );
+    ,utils                      = require( './utils' );
 
 var benchmark = function() {
 

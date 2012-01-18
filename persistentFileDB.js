@@ -1,7 +1,7 @@
 var  globalDumpTimer            = null
     ,globalFileDBObjectCache    = {}
     ,_                          = require( 'Underscore' )
-    ,utils                      = require( 'utils' )
+    ,utils                      = require( './utils' )
     ,fs                         = require( 'fs' )
     ,path                       = require( 'path' )
     ,events                     = require( 'events' );
