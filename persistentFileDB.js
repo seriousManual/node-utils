@@ -2,6 +2,7 @@ var  globalDumpTimer            = null
     ,globalFileDBObjectCache    = {}
     ,async                      = require( 'async' )
     ,utils                      = require( './utils' )
+    ,eventedQueue               = require( './eventedQueue')
     ,fs                         = require( 'fs' )
     ,path                       = require( 'path' )
     ,events                     = require( 'events' );
@@ -13,7 +14,7 @@ var FileDB = function ( fileName ) {
         ,updated            = false
         ,that               = this
         ,globalRecord       = {}
-        ,initializeBuffer   = [];
+        ,myQueue            = new eventedQueue();
 
     this.initialize = function() {
 
@@ -21,8 +22,6 @@ var FileDB = function ( fileName ) {
             this.emit( 'error', 'already initialized' );
             return;
         }
-
-        this.on( 'initialize', completeAllTheTasks );
 
         try {
             path.exists( fileName, function( exists ) {
@@ -37,6 +36,7 @@ var FileDB = function ( fileName ) {
                             initialized = true;
 
                             that.emit( 'initialize' );
+                            myQueue.trigger();
                         } catch( e ) {
                             that.emit( 'error', 'JSON parsing error: ' + e );
                         }
@@ -54,6 +54,7 @@ var FileDB = function ( fileName ) {
                             that.dumpData();
 
                             that.emit( 'initialize' );
+                            myQueue.trigger();
                         } else {
                             that.emit( 'error', err );
                         }
@@ -65,14 +66,6 @@ var FileDB = function ( fileName ) {
             that.emit( 'error', e );
         }
 
-    };
-
-    var completeAllTheTasks = function() {
-        initializeBuffer.forEach( function( value ) {
-            process.nextTick( function() {
-                value.f.apply( null, value.a );
-            } );
-        } );
     };
 
     var extractRecordData = function( id, record ) {
@@ -105,13 +98,9 @@ var FileDB = function ( fileName ) {
     var external = function( wrap ) {
         return function() {
             var args = Array.prototype.slice.call( arguments );
+            args.unshift( wrap );
 
-            if ( !initialized ) {
-                initializeBuffer.push( {f: wrap, a: args } );
-            } else {
-                wrap.apply( null, args );
-            }
-
+            myQueue.push.apply( myQueue, args );
         };
     };
 
