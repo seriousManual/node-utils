@@ -9,10 +9,11 @@ var  globalDumpTimer            = null
 
 var FileDB = function ( fileName ) {
 
-    var initialized     = false
-        ,updated        = false
-        ,that           = this
-        ,globalRecord   = {};
+    var initialized         = false
+        ,updated            = false
+        ,that               = this
+        ,globalRecord       = {}
+        ,initializeBuffer   = [];
 
     this.initialize = function() {
 
@@ -20,6 +21,8 @@ var FileDB = function ( fileName ) {
             this.emit( 'error', 'already initialized' );
             return;
         }
+
+        this.on( 'initialize', completeAllTheTasks );
 
         try {
             path.exists( fileName, function( exists ) {
@@ -64,6 +67,14 @@ var FileDB = function ( fileName ) {
 
     };
 
+    var completeAllTheTasks = function() {
+        initializeBuffer.forEach( function( value ) {
+            process.nextTick( function() {
+                value.f.apply( null, value.a );
+            } );
+        } );
+    };
+
     var extractRecordData = function( id, record ) {
         if ( !record.deleted ) {
             var recordData      = record.data;
@@ -91,14 +102,20 @@ var FileDB = function ( fileName ) {
         } );
     };
 
-    this.list = function( callback ) {
-        callback = callback || function() {};
+    var external = function( wrap ) {
+        return function() {
+            var args = Array.prototype.slice.call( arguments );
 
-        if ( !initialized ) {
-            callback( 'Database is not initialized yet.', null );
-            return;
-        }
+            if ( !initialized ) {
+                initializeBuffer.push( {f: wrap, a: args } );
+            } else {
+                wrap.apply( null, args );
+            }
 
+        };
+    };
+
+    var list = function( callback ) {
         var tmp = [];
         for( var i = 0, len = globalRecord.length; i < len; i++ ) {
             var recordData = false;
@@ -110,14 +127,9 @@ var FileDB = function ( fileName ) {
         callback( null, tmp );
     };
 
-    this.getRecord = function( id, callback ) {
-        callback = callback || function() {};
+    this.list = external( list );
 
-        if ( !initialized ) {
-            callback( 'not initialized yet', null );
-            return;
-        }
-
+    var getRecord = function( id, callback ) {
         var recordData = false;
         if ( globalRecord[ id ] && ( recordData = extractRecordData( id, globalRecord[ id ] ) ) ) {
             callback( null, recordData );
@@ -126,14 +138,9 @@ var FileDB = function ( fileName ) {
         }
     };
 
-    this.setRecord = function( data, id, callback ) {
-        callback = callback || function() {};
+    this.getRecord = external( getRecord );
 
-        if ( !initialized ) {
-            callback( 'not initialized yet', null );
-            return;
-        }
-
+    var setRecord = function( data, id, callback ) {
         if ( data.id ) {
             delete data.id;
         }
@@ -162,14 +169,9 @@ var FileDB = function ( fileName ) {
 
     };
 
-    this.deleteRecord = function( id, callback ) {
-        callback = callback || function() {};
+    this.setRecord = external( setRecord );
 
-        if ( !initialized ) {
-            callback( 'not initialized yet' );
-            return;
-        }
-
+    var deleteRecord = function( id, callback ) {
         if ( globalRecord[ id ] ) {
             globalRecord[ id ].deleted = true;
             updated = true;
@@ -178,8 +180,9 @@ var FileDB = function ( fileName ) {
         } else {
             callback( 'not found' );
         }
-
     };
+
+    this.deleteRecord = external( deleteRecord );
 
     this.disconnect = function() {
         initialized = false;
