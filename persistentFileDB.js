@@ -1,6 +1,6 @@
 var  globalDumpTimer            = null
     ,globalFileDBObjectCache    = {}
-    ,_                          = require( 'Underscore' )
+    ,async                      = require( 'async' )
     ,utils                      = require( './utils' )
     ,fs                         = require( 'fs' )
     ,path                       = require( 'path' )
@@ -61,8 +61,6 @@ var FileDB = function ( fileName ) {
         } catch( e ) {
             that.emit( 'error', e );
         }
-
-
 
     };
 
@@ -217,9 +215,9 @@ exports.request = function( fileName ) {
 
     if ( globalDumpTimer == null ) {
         globalDumpTimer = setInterval( function() {
-            _.each( globalFileDBObjectCache, function( dbObject, key ) {
-                dbObject.dumpData();
-            } );
+            for( var key in globalFileDBObjectCache ) {
+                globalFileDBObjectCache[ key ].dumpData();
+            }
         }, 5000 );
     }
 
