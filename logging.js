@@ -1,8 +1,9 @@
 
+var myOBject = {};
+
 var  utils                     = require( 'utils' )
     ,path                      = require( 'path' )
-    ,fs                        = require( 'fs' )
-    ,_                         = require( 'Underscore' );
+    ,fs                        = require( 'fs' );
 
 var loggerCache = {};
 
@@ -58,7 +59,7 @@ var Logger = function( fileName ) {
 
         var c = 0;
 
-        _.each( messages2, function( value, key ) {
+        messages2.forEach( function( value ) {
             c++;
             stream.write( JSON.stringify( value ) + '\n' );
         } );
