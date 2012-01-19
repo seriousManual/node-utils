@@ -28,7 +28,7 @@ var benchmark = function() {
         var self = this;
 
         return function() {
-            var  args        = Array.prototype.slice.apply( arguments )
+            var  args        = Array.prototype.slice.call( arguments )
                 ,isAsync     = args.length == 0 ?   //inferring asynchronity from the fact that a callback according to node convention is always the last argument
                                false :
                                typeof args[ args.length-1 ] === 'function'
