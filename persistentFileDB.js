@@ -98,9 +98,8 @@ var FileDB = function ( fileName ) {
     var external = function( wrap ) {
         return function() {
             var args = Array.prototype.slice.call( arguments );
-            args.unshift( wrap );
 
-            myQueue.push.apply( myQueue, args );
+            myQueue.push.apply( myQueue, [ wrap ].concat( args ) );
         };
     };
 
