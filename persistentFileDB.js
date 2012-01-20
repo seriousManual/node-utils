@@ -1,6 +1,5 @@
 var  globalDumpTimer            = null
     ,globalFileDBObjectCache    = {}
-    ,async                      = require( 'async' )
     ,utils                      = require( './utils' )
     ,eventedQueue               = require( './eventedQueue')
     ,fs                         = require( 'fs' )
