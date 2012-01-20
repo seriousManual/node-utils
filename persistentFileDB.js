@@ -92,13 +92,12 @@ var FileDB = function ( fileName ) {
         }
 
         updated = false; //concurrency is a bitch, when some writes to db while dumping (async ftw) we cant reset updated to false afterwards, doing it before
-var start = Date.now();
+
         fs.writeFile( fileName, JSON.stringify( globalRecord ), 'utf8', function( err ) {
             if ( err ) {
                 //retrying next time
                 updated = true;
             }
-console.log( 'took me ' + (Date.now() - start) + 'ms to save' );
         } );
     };
 
