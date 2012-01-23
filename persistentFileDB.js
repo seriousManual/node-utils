@@ -2,7 +2,7 @@ var  globalDumpTimer            = null
     ,globalFileDBObjectCache    = {}
     ,async                      = require( 'async' )
     ,utils                      = require( './utils' )
-    ,eventedQueue               = require( './eventedQueue')
+    ,EventQueue                 = require( './eventedQueue')
     ,fs                         = require( 'fs' )
     ,path                       = require( 'path' )
     ,events                     = require( 'events' );
@@ -14,7 +14,7 @@ var FileDB = function ( fileName ) {
         ,updated            = false
         ,that               = this
         ,globalRecord       = {}
-        ,myQueue            = new eventedQueue();
+        ,myQueue            = new EventQueue();
 
     this.initialize = function() {
 
@@ -86,7 +86,9 @@ var FileDB = function ( fileName ) {
             return;
         }
 
-        updated = false; //concurrency is a bitch, when some writes to db while dumping (async ftw) we cant reset updated to false afterwards, doing it before
+        updated = false;
+        //concurrency is a bitch, when some writes to db while dumping (async ftw) we
+        // cant reset updated to false afterwards, doing it before
         fs.writeFile( fileName, JSON.stringify( globalRecord ), 'utf8', function( err ) {
             if ( err ) {
                 //retrying next time
