@@ -78,7 +78,7 @@ var FileDB = function ( fileName ) {
             var tmp = {};
 
              for( var k in record.data ) {
-                 if ( !Object.prototype.hasOwnProperty.call( record, k ) ) {
+                 if ( Object.prototype.hasOwnProperty.call( record.data, k ) ) {
                      tmp[ k ] = record.data[ k ];
                  }
              }
