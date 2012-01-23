@@ -45,3 +45,26 @@ Asynchronicity is inferred by the fact that a callback is always the last argume
 ### persisteneFileDB
 
 Key/Value Storage that writes back to a given file and holds everything in storage.
+
+    var filedb = require( 'node-utils/persistentFileDB' );
+    var tmpdb = filedb.request( 'data.json' );
+
+    tmpdb.on( 'error', function( error ) {
+        console.log( 'error: ' + error );
+    } );
+
+    //read record by row id
+    tmpdb.getRecord( 0, function( err, id ) {
+        console.log( 'content 0: ' + id );
+    } );
+
+    //update Record, expected: object, id|null, callback
+    tmpdb.setRecord( [], null, function( err, id ) { //error
+        console.log( 'error: ' + err );
+    } );
+
+    //null indicates insert
+    //updates are overwriting
+    tmpdb.setRecord( { a:1 }, null, function( err, id ) {
+        console.log( 'result of setRecord: ' + id );
+    } );
