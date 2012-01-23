@@ -1,6 +1,5 @@
 var  globalDumpTimer            = null
     ,globalFileDBObjectCache    = {}
-    ,async                      = require( 'async' )
     ,utils                      = require( './utils' )
     ,eventedQueue               = require( './eventedQueue')
     ,fs                         = require( 'fs' )
@@ -30,17 +29,23 @@ var FileDB = function ( fileName ) {
                     fs.readFile( fileName, 'utf8', function( error, data ) {
                         if ( error ) {
                             that.emit( 'error', error );
+                            return;
                         }
                         try {
-                            globalRecord = JSON.parse( data );
+                            if ( data ) {
+                                globalRecord = JSON.parse( data );
+                            } else {
+                                globalRecord = [];
+                            }
                             initialized = true;
 
                             that.emit( 'initialize' );
-                            myQueue.trigger();
                         } catch( e ) {
                             that.emit( 'error', 'JSON parsing error: ' + e );
+                            return;
                         }
 
+                        myQueue.trigger();
                     } );
                 } else {
                     fs.open( fileName, 'a', function( err, fd ) {
@@ -70,12 +75,20 @@ var FileDB = function ( fileName ) {
 
     var extractRecordData = function( id, record ) {
         if ( !record.deleted ) {
-            var recordData      = record.data;
-            recordData.erfda    = record.erfda;
-            recordData.updda    = record.updda;
-            recordData.id       = id;
+            var tmp = {};
 
-            return recordData;
+            //cloning, as simply referencing would change the record afterwards
+            for( var k in record.data ) {
+                 if ( Object.prototype.hasOwnProperty.call( record.data, k ) ) {
+                     tmp[ k ] = record.data[ k ];
+                 }
+             }
+
+            tmp.erfda    = record.erfda;
+            tmp.updda    = record.updda;
+            tmp.id       = id;
+
+             return tmp;
         } else {
             return false;
         }
@@ -87,6 +100,7 @@ var FileDB = function ( fileName ) {
         }
 
         updated = false; //concurrency is a bitch, when some writes to db while dumping (async ftw) we cant reset updated to false afterwards, doing it before
+
         fs.writeFile( fileName, JSON.stringify( globalRecord ), 'utf8', function( err ) {
             if ( err ) {
                 //retrying next time
@@ -112,7 +126,7 @@ var FileDB = function ( fileName ) {
             }
         }
 
-        callback( null, tmp );
+        return callback( null, tmp );
     };
 
     this.list = external( list );
@@ -120,15 +134,19 @@ var FileDB = function ( fileName ) {
     var getRecord = function( id, callback ) {
         var recordData = false;
         if ( globalRecord[ id ] && ( recordData = extractRecordData( id, globalRecord[ id ] ) ) ) {
-            callback( null, recordData );
+            return callback( null, recordData );
         } else {
-            callback( 'not found!', null );
+            return callback( 'not found!', null );
         }
     };
 
     this.getRecord = external( getRecord );
 
     var setRecord = function( data, id, callback ) {
+        if ( !data || 'object' !== typeof data || Array.isArray( data ) ) {
+            return callback( 'invalid data supplied', null );
+        }
+
         if ( data.id ) {
             delete data.id;
         }
@@ -144,15 +162,15 @@ var FileDB = function ( fileName ) {
             globalRecord[ newId ] = { deleted: false, erfda: Date.now(), updda:null, data:data };
             updated = true;
 
-            callback( null, newId );
+            return callback( null, newId );
         } else if ( globalRecord[ id ] ) {
             globalRecord[ id ].data = data;
             globalRecord[ id ].updda = Date.now();
 
             updated = true;
-            callback( null, id );
+            return callback( null, id );
         } else {
-            callback( 'not found!', null );
+            return callback( 'not found!', null );
         }
 
     };
@@ -164,9 +182,9 @@ var FileDB = function ( fileName ) {
             globalRecord[ id ].deleted = true;
             updated = true;
 
-            callback( false );
+            return callback( false );
         } else {
-            callback( 'not found' );
+            return callback( 'not found' );
         }
     };
 
@@ -207,7 +225,9 @@ exports.request = function( fileName ) {
     if ( globalDumpTimer == null ) {
         globalDumpTimer = setInterval( function() {
             for( var key in globalFileDBObjectCache ) {
-                globalFileDBObjectCache[ key ].dumpData();
+                if ( !Object.prototype.hasOwnProperty( globalFileDBObjectCache, key ) ) {
+                    globalFileDBObjectCache[ key ].dumpData();
+                }
             }
         }, 5000 );
     }
