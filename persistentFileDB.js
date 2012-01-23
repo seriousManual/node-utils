@@ -77,7 +77,8 @@ var FileDB = function ( fileName ) {
         if ( !record.deleted ) {
             var tmp = {};
 
-             for( var k in record.data ) {
+            //cloning, as simply referencing would change the record afterwards
+            for( var k in record.data ) {
                  if ( Object.prototype.hasOwnProperty.call( record.data, k ) ) {
                      tmp[ k ] = record.data[ k ];
                  }

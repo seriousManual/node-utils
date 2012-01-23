@@ -7,13 +7,17 @@ eQueue.prototype.push = function() {
     var args = Array.prototype.slice.call( arguments );
 
     if ( args.length > 0 ) {
+        if ( 'function' !== typeof args[0] )  {
+            throw new Error( 'no function submitted' );
+        }
+
         if ( this.triggered ) {
             args.shift().apply( null, args.length > 0 ? args : [] );
         } else {
             this.triggerQueue.push( { f: args.shift(), args: ( args.length > 0 ? args : [] ) } );
         }
     } else {
-        throw 'not function argument supplied!';
+        throw new Error( 'not function argument supplied!' );
     }
 };
 
