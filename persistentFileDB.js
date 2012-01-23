@@ -75,12 +75,19 @@ var FileDB = function ( fileName ) {
 
     var extractRecordData = function( id, record ) {
         if ( !record.deleted ) {
-            var recordData      = record.data;
-            recordData.erfda    = record.erfda;
-            recordData.updda    = record.updda;
-            recordData.id       = id;
+            var tmp = {};
 
-            return recordData;
+             for( var k in record.data ) {
+                 if ( !Object.prototype.hasOwnProperty.call( record, k ) ) {
+                     tmp[ k ] = record.data[ k ];
+                 }
+             }
+
+            tmp.erfda    = record.erfda;
+            tmp.updda    = record.updda;
+            tmp.id       = id;
+
+             return tmp;
         } else {
             return false;
         }
@@ -218,7 +225,9 @@ exports.request = function( fileName ) {
     if ( globalDumpTimer == null ) {
         globalDumpTimer = setInterval( function() {
             for( var key in globalFileDBObjectCache ) {
-                setTimeout( function() { globalFileDBObjectCache[ key ].dumpData(); }, 0 );
+                if ( !Object.prototype.hasOwnProperty( globalFileDBObjectCache, key ) ) {
+                    globalFileDBObjectCache[ key ].dumpData();
+                }
             }
         }, 5000 );
     }
