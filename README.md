@@ -23,6 +23,12 @@ Usage:
     myFunctionAsync = bench.benchmark( myFunctionAsync, 'myFunctionAsync' );
     myFunctionSync = bench.benchmark( myFunctionSync, 'myFunctionSync' );
 
+    //invoke:
+    myFunctionAsync( function() {
+        console.log( 'async returned' );
+    } );
+    myFunctionSync();
+
     //benchmark is a event emitter, listen to 'drain' to get notfied when the last async function as finished
     bench.on( 'drain', function( result ) {
         console.log( result );
