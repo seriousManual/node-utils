@@ -8,7 +8,7 @@ eQueue.prototype.push = function() {
 
     if ( args.length > 0 ) {
         if ( 'function' !== typeof args[0] )  {
-            throw new Error( 'no function submitted' );
+            throw new Error( 'first parameter should be function' );
         }
 
         if ( this.triggered ) {
