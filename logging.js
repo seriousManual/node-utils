@@ -1,4 +1,4 @@
-var  utils                     = require( 'utils' )
+var  utils                     = require( './utils' )
     ,path                      = require( 'path' )
     ,fs                        = require( 'fs' );
 
@@ -34,7 +34,7 @@ var Logger = function( fileName ) {
 
         path.exists( filePath, function( exists ) {
             if ( !exists ) {
-                throw 'Logger: ' + filePath + ' doesnt exist.';
+                throw new Error( 'Logger: ' + filePath + ' doesnt exist.' );
             } else {
                 logFile = filePath;
             }
@@ -44,6 +44,10 @@ var Logger = function( fileName ) {
     };
 
     var writeAway = function() {
+        if ( messages.length == 0 ) {
+            return;
+        }
+
         var tmp       = messages;
             messages  = messages2;
             messages2 = tmp;
@@ -68,7 +72,7 @@ var Logger = function( fileName ) {
 };
 
 Logger.prototype.level = {
-    Info:      'Information',
+    Info:      'Info',
     Warning:   'Warning',
     Error:     'Error'
 };
@@ -78,16 +82,18 @@ module.exports.Logger = Logger;
 module.exports.predefined = predefined;
 
 module.exports.request = function( pKey, pPath ) {
-    var path = '';
-    if ( predefined[ pKey ] || loggerCache[ pKey ] ) {
-        path = pathConfig[ pKey ];
-    } else if ( pPath ) {
-        path = pPath;
-    } else {
-        throw 'unknwon request for logger, no path specified';
-    }
 
     if ( !loggerCache[ pKey ] ) {
+        var path = '';
+
+        if ( predefined[ pKey ]  ) {
+            path = pathConfig[ pKey ];
+        } else if ( pPath ) {
+            path = pPath;
+        } else {
+            throw new Error( 'unknown request for logger, no path specified' );
+        }
+
         loggerCache[ pKey ] = new Logger( path );
     }
 
