@@ -34,7 +34,7 @@ var Logger = function( fileName ) {
 
         path.exists( filePath, function( exists ) {
             if ( !exists ) {
-                throw 'Logger: ' + filePath + ' doesnt exist.';
+                throw new Error( 'Logger: ' + filePath + ' doesnt exist.' );
             } else {
                 logFile = filePath;
             }
@@ -84,7 +84,7 @@ module.exports.request = function( pKey, pPath ) {
     } else if ( pPath ) {
         path = pPath;
     } else {
-        throw 'unknwon request for logger, no path specified';
+        throw new Error( 'unknwon request for logger, no path specified' );
     }
 
     if ( !loggerCache[ pKey ] ) {
