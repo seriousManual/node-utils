@@ -1,7 +1,7 @@
 
 var myOBject = {};
 
-var  utils                     = require( 'utils' )
+var  utils                     = require( './utils' )
     ,path                      = require( 'path' )
     ,fs                        = require( 'fs' );
 
