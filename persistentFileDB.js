@@ -215,10 +215,12 @@ exports.request = function( fileName ) {
     if ( !fileName ) {
         fileName = 'data.json';
     } else {
-        fileName = fileName.replace( /^(\/|\\)/g, '' ).replace( /(\/|\\)/g, utils.compatSeperator() );
+        fileName = path.normalize( fileName );
     }
 
-    var myKey = process.cwd() + utils.compatSeperator() + fileName;
+    var myKey = process.cwd() + '/' + fileName;
+    myKey = path.normalize( myKey );
+
     if ( !globalFileDBObjectCache[ myKey ] ) {
         globalFileDBObjectCache[ myKey ] = new FileDB( myKey );
     }
