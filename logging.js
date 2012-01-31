@@ -1,3 +1,4 @@
+
 var  utils                     = require( './utils' )
     ,path                      = require( 'path' )
     ,fs                        = require( 'fs' );
@@ -14,8 +15,7 @@ var pathConfig = {
 
 var Logger = function( fileName ) {
 
-    var  initialized    = false
-        ,messages       = []
+    var  messages       = []
         ,messages2      = []
         ,logFile        = '';
 
@@ -82,6 +82,17 @@ module.exports.Logger = Logger;
 module.exports.predefined = predefined;
 
 module.exports.request = function( pKey, pPath ) {
+<<<<<<< HEAD
+=======
+    var path = '';
+    if ( predefined[ pKey ] || loggerCache[ pKey ] ) {
+        path = pathConfig[ pKey ];
+    } else if ( pPath ) {
+        path = pPath;
+    } else {
+        throw new Error( 'unknwon request for logger, no path specified' );
+    }
+>>>>>>> refactor
 
     if ( !loggerCache[ pKey ] ) {
         var path = '';

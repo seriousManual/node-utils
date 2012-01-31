@@ -12,7 +12,9 @@ EventQueue.prototype.push = function() {
         }
 
         if ( this.triggered ) {
-            args.shift().apply( null, args.length > 0 ? args : [] );
+            process.nextTick( function() {
+                args.shift().apply( null, args.length > 0 ? args : [] );
+            } );
         } else {
             this.triggerQueue.push( { f: args.shift(), args: ( args.length > 0 ? args : [] ) } );
         }
