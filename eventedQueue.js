@@ -1,9 +1,9 @@
-var eQueue = function() {
+var EventQueue = function() {
     this.triggered = false;
     this.triggerQueue = [];
 };
 
-eQueue.prototype.push = function() {
+EventQueue.prototype.push = function() {
     var args = Array.prototype.slice.call( arguments );
 
     if ( args.length > 0 ) {
@@ -12,7 +12,9 @@ eQueue.prototype.push = function() {
         }
 
         if ( this.triggered ) {
-            args.shift().apply( null, args.length > 0 ? args : [] );
+            process.nextTick( function() {
+                args.shift().apply( null, args.length > 0 ? args : [] );
+            } );
         } else {
             this.triggerQueue.push( { f: args.shift(), args: ( args.length > 0 ? args : [] ) } );
         }
@@ -21,7 +23,7 @@ eQueue.prototype.push = function() {
     }
 };
 
-eQueue.prototype.trigger = function() {
+EventQueue.prototype.trigger = function() {
     this.triggered = true;
 
     this.triggerQueue.map( function( value, key, all ) {
@@ -31,4 +33,4 @@ eQueue.prototype.trigger = function() {
 };
 
 
-module.exports = eQueue;
+module.exports = EventQueue;

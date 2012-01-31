@@ -1,4 +1,5 @@
-var  utils                     = require( 'utils' )
+
+var  utils                     = require( './utils' )
     ,path                      = require( 'path' )
     ,fs                        = require( 'fs' );
 
@@ -14,8 +15,7 @@ var pathConfig = {
 
 var Logger = function( fileName ) {
 
-    var  initialized    = false
-        ,messages       = []
+    var  messages       = []
         ,messages2      = []
         ,logFile        = '';
 
