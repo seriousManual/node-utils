@@ -26,9 +26,9 @@ var Logger = function( fileName ) {
     var init = function( fileName ) {
         if ( !fileName ) {
             fileName = 'data.json';
-        } else {
-            fileName = fileName.replace( /^(\/|\\)/g, '' ).replace( /(\/|\\)/g, utils.compatSeperator() );
         }
+
+        fileName = path.normalize( fileName );
 
         var filePath = process.cwd() + utils.compatSeperator() + fileName;
 
@@ -54,7 +54,7 @@ var Logger = function( fileName ) {
 
         var stream = fs.createWriteStream( logFile, {
             flags: "a",
-            encoding: "encoding",
+            encoding: "utf8",
             mode: 0666
         } );
 
