@@ -58,13 +58,13 @@ Key/Value Storage that writes back to a given file and holds everything in stora
         console.log( 'content 0: ' + id );
     } );
 
-    //update Record, expected: object, id|null, callback
-    tmpdb.setRecord( [], null, function( err, id ) { //error
-        console.log( 'error: ' + err );
+    //id=null indicates insert
+    tmpdb.setRecord( { a:1 }, null, function( err, id ) {
+        console.log( 'result of setRecord: ' + id );
     } );
 
-    //null indicates insert
-    //updates are overwriting
-    tmpdb.setRecord( { a:1 }, null, function( err, id ) {
+    //submitting id indicates update
+    //every value will be overwritten
+    tmpdb.setRecord( { a:1 }, 2, function( err, id ) {
         console.log( 'result of setRecord: ' + id );
     } );
