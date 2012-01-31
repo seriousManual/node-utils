@@ -82,17 +82,6 @@ module.exports.Logger = Logger;
 module.exports.predefined = predefined;
 
 module.exports.request = function( pKey, pPath ) {
-<<<<<<< HEAD
-=======
-    var path = '';
-    if ( predefined[ pKey ] || loggerCache[ pKey ] ) {
-        path = pathConfig[ pKey ];
-    } else if ( pPath ) {
-        path = pPath;
-    } else {
-        throw new Error( 'unknwon request for logger, no path specified' );
-    }
->>>>>>> refactor
 
     if ( !loggerCache[ pKey ] ) {
         var path = '';
