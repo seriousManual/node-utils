@@ -4,8 +4,6 @@ var EventQueue = function( queueTriggered ) {
     this.triggerQueue   = [];
 };
 
-//make sure not to trigger events that have been already triggered!
-
 EventQueue.prototype.push = function() {
     var args = Array.prototype.slice.call( arguments );
 
