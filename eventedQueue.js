@@ -4,6 +4,8 @@ var EventQueue = function( queueTriggered ) {
     this.triggerQueue   = [];
 };
 
+//make sure not to trigger events that have been already triggered!
+
 EventQueue.prototype.push = function() {
     var args = Array.prototype.slice.call( arguments );
 
@@ -27,9 +29,10 @@ EventQueue.prototype.push = function() {
 EventQueue.prototype.trigger = function() {
     this.triggered = true;
 
-    this.triggerQueue.map( function( value, key, all ) {
-        value.f.apply( null, value.args );
-    } );
+    while( this.triggerQueue.length > 0 ) {
+        var item = this.triggerQueue.shift();
+        item.f.apply( null, item.args );
+    }
 
 };
 
