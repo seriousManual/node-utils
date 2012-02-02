@@ -1,6 +1,7 @@
-var EventQueue = function() {
-    this.triggered = false;
-    this.triggerQueue = [];
+var EventQueue = function( queueTriggered ) {
+    this.queueTriggered = queueTriggered || false;
+    this.triggered      = false;
+    this.triggerQueue   = [];
 };
 
 EventQueue.prototype.push = function() {
@@ -11,7 +12,7 @@ EventQueue.prototype.push = function() {
             throw new Error( 'first parameter should be function' );
         }
 
-        if ( this.triggered ) {
+        if ( this.triggered && !this.queueTriggered ) {
             process.nextTick( function() {
                 args.shift().apply( null, args.length > 0 ? args : [] );
             } );
