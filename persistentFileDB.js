@@ -6,7 +6,6 @@ var  globalDumpTimer            = null
     ,path                       = require( 'path' )
     ,events                     = require( 'events' );
 
-
 var FileDB = function ( fileName ) {
 
     var initialized         = false
@@ -192,7 +191,7 @@ var FileDB = function ( fileName ) {
     this.deleteRecord = external( deleteRecord );
 
     this.disconnect = function() {
-        initialized = false;
+        initialized = false; 
 
         this.dumpData();
         removeFromFileObjectCache( fileName );
