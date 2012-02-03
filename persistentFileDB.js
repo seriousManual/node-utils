@@ -1,6 +1,6 @@
 var  globalDumpTimer            = null
     ,globalFileDBObjectCache    = {}
-    ,utils                      = require( './utils' )
+    ,util                       = require( 'util' )
     ,EventQueue                 = require( './eventedQueue')
     ,fs                         = require( 'fs' )
     ,path                       = require( 'path' )
@@ -202,7 +202,7 @@ var FileDB = function ( fileName ) {
 
 };
 
-utils.inherits( FileDB, events.EventEmitter );
+util.inherits( FileDB, events.EventEmitter );
 
 
 

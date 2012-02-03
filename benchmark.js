@@ -1,5 +1,5 @@
 var  events                     = require( 'events' )
-    ,utils                      = require( './utils' );
+    ,util                      = require( 'util' );
 
 var Benchmark = function() {
 
@@ -70,6 +70,6 @@ var Benchmark = function() {
 
 };
 
-utils.inherits( Benchmark, events.EventEmitter );
+util.inherits( Benchmark, events.EventEmitter );
 
 module.exports = new Benchmark();

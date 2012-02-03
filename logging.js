@@ -1,5 +1,5 @@
 
-var  utils                     = require( './utils' )
+var  util                      = require( 'util' )
     ,path                      = require( 'path' )
     ,fs                        = require( 'fs' );
 
@@ -30,7 +30,7 @@ var Logger = function( fileName ) {
 
         fileName = path.normalize( fileName );
 
-        var filePath = process.cwd() + utils.compatSeperator() + fileName;
+        var filePath = path.normalize( process.cwd() + '/' + fileName );
 
         path.exists( filePath, function( exists ) {
             if ( !exists ) {
@@ -40,7 +40,7 @@ var Logger = function( fileName ) {
             }
         } );
 
-        setInterval( writeAway, 15000 );
+        setInterval( writeAway, 5000 );
     };
 
     var writeAway = function() {

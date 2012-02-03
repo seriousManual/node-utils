@@ -1,6 +1,7 @@
-var EventQueue = function() {
-    this.triggered = false;
-    this.triggerQueue = [];
+var EventQueue = function( queueTriggered ) {
+    this.queueTriggered = queueTriggered || false;
+    this.triggered      = false;
+    this.triggerQueue   = [];
 };
 
 EventQueue.prototype.push = function() {
@@ -8,10 +9,10 @@ EventQueue.prototype.push = function() {
 
     if ( args.length > 0 ) {
         if ( 'function' !== typeof args[0] )  {
-            throw new Error( 'first parameter should be function' );
+            throw new Error( 'first parameter should be a function' );
         }
 
-        if ( this.triggered ) {
+        if ( this.triggered && !this.queueTriggered ) {
             process.nextTick( function() {
                 args.shift().apply( null, args.length > 0 ? args : [] );
             } );
@@ -26,9 +27,10 @@ EventQueue.prototype.push = function() {
 EventQueue.prototype.trigger = function() {
     this.triggered = true;
 
-    this.triggerQueue.map( function( value, key, all ) {
-        value.f.apply( null, value.args );
-    } );
+    while( this.triggerQueue.length > 0 ) {
+        var item = this.triggerQueue.shift();
+        item.f.apply( null, item.args );
+    }
 
 };
 
