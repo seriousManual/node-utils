@@ -9,7 +9,7 @@ EventQueue.prototype.push = function() {
 
     if ( args.length > 0 ) {
         if ( 'function' !== typeof args[0] )  {
-            throw new Error( 'first parameter should be function' );
+            throw new Error( 'first parameter should be a function' );
         }
 
         if ( this.triggered && !this.queueTriggered ) {
