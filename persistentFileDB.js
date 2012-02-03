@@ -6,7 +6,6 @@ var  globalDumpTimer            = null
     ,path                       = require( 'path' )
     ,events                     = require( 'events' );
 
-
 var FileDB = function ( fileName ) {
 
     var initialized         = false
@@ -192,7 +191,7 @@ var FileDB = function ( fileName ) {
     this.deleteRecord = external( deleteRecord );
 
     this.disconnect = function() {
-        initialized = false;
+        initialized = false; 
 
         this.dumpData();
         removeFromFileObjectCache( fileName );
@@ -232,7 +231,7 @@ exports.request = function( fileName ) {
                     globalFileDBObjectCache[ key ].dumpData();
                 }
             }
-        }, 5000 );
+        }, 600000 ); //10 Min Interval
     }
 
     return globalFileDBObjectCache[ myKey ];

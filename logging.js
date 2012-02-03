@@ -17,7 +17,8 @@ var Logger = function( fileName ) {
 
     var  messages       = []
         ,messages2      = []
-        ,logFile        = '';
+        ,logFile        = ''
+        ,myStream       = null;
 
     this.log = function( level, text ) {
         messages.push( { level: level, text: text, time: Date.now() } );
@@ -34,13 +35,26 @@ var Logger = function( fileName ) {
 
         path.exists( filePath, function( exists ) {
             if ( !exists ) {
-                throw new Error( 'Logger: ' + filePath + ' doesnt exist.' );
+                
+                fs.open( fileName, 'a', function( err, fd ) {
+                    if ( !err ) {
+                        fs.close( fd );
+                    } else {
+                        throw new Error( 'couldnt create logfile: ' + filePath + ' because of: ' + err );
+                    }
+                } );
+
             } else {
                 logFile = filePath;
+                myStream = fs.createWriteStream( logFile, { flags: "a", encoding: "utf8", mode: 0666 } );
+
+                if ( !myStream ) {
+                    throw new Error( 'could not create write stream' );
+                }
             }
         } );
 
-        setInterval( writeAway, 5000 );
+        setInterval( writeAway, 600000 ); //10 Min
     };
 
     var writeAway = function() {
@@ -52,17 +66,11 @@ var Logger = function( fileName ) {
             messages  = messages2;
             messages2 = tmp;
 
-        var stream = fs.createWriteStream( logFile, {
-            flags: "a",
-            encoding: "utf8",
-            mode: 0666
-        } );
-
         var c = 0;
 
         messages2.forEach( function( value ) {
             c++;
-            stream.write( JSON.stringify( value ) + '\n' );
+            myStream.write( JSON.stringify( value ) + '\n' );
         } );
 
         messages2 = [];
