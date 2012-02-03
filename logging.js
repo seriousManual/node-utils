@@ -39,12 +39,17 @@ var Logger = function( fileName ) {
                 fs.open( fileName, 'a', function( err, fd ) {
                     if ( !err ) {
                         fs.close( fd );
+                        createStream();
                     } else {
                         throw new Error( 'couldnt create logfile: ' + filePath + ' because of: ' + err );
                     }
                 } );
 
             } else {
+                createStream();
+            }
+
+            function createStream() {
                 logFile = filePath;
                 myStream = fs.createWriteStream( logFile, { flags: "a", encoding: "utf8", mode: 0666 } );
 
@@ -52,6 +57,7 @@ var Logger = function( fileName ) {
                     throw new Error( 'could not create write stream' );
                 }
             }
+            
         } );
 
         setInterval( writeAway, 600000 ); //10 Min
