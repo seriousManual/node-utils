@@ -40,7 +40,7 @@ var Logger = function( fileName ) {
                     if ( !err ) {
                         fs.close( fd );
                     } else {
-                        throw new Error( 'couldnt create logfile: ' + filePath );
+                        throw new Error( 'couldnt create logfile: ' + filePath + ' because of: ' + err );
                     }
                 } );
 
@@ -54,7 +54,7 @@ var Logger = function( fileName ) {
             }
         } );
 
-        setInterval( writeAway, 5000 );
+        setInterval( writeAway, 600000 ); //10 Min
     };
 
     var writeAway = function() {

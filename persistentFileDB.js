@@ -231,7 +231,7 @@ exports.request = function( fileName ) {
                     globalFileDBObjectCache[ key ].dumpData();
                 }
             }
-        }, 5000 );
+        }, 600000 ); //10 Min Interval
     }
 
     return globalFileDBObjectCache[ myKey ];
